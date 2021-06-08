@@ -12,5 +12,13 @@ const videoSchema = new mongoose.Schema({
   },
 });
 
+videoSchema.static("formatHashtags", function (hashtags) {
+  return hashtags
+    .split(",")
+    .map((word) => (word.startsWith("#") ? word : `#${word}`));
+      //,기준으로 나눠서 배열로 만들어주고 # 붙여줌.    
+});
+
+
 const Video = mongoose.model("Video", videoSchema);
 export default Video;
