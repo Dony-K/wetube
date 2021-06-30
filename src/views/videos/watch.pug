@@ -2,15 +2,61 @@ extends ../base
 
 
 block content
-    video(src="/" + video.fileUrl, controls)
+    div#videoContainer(data-id=video._id)
+        //- 프론트엔드에 쓰기 위해 video id를 데이터에 저장
+        video(src="/" + video.fileUrl)
         //- 비디오경로에서 비디오 가져오고 controls는 비디오 재생 조절버튼 생성
-    div
-        p=video.description
-        small=video.createdAt
-    div
-        small Uploaded by 
+        div#videoControls.videoControls
+            div.videoControls__play
+                span#play.videoControls__playBtn
+                    i.fas.fa-play
+                div.videoControls__time
+                    span#currentTime 00:00
+                    span  / 
+                    span#totalTime 00:00
+            input(type="range",step="1", value="0", min="0")#timeline.videoControls__timeline
+            div.videoControls__volume
+                input(type="range",step="0.1", value=0.5, min="0", max="1")#volume
+                span#mute
+                    i.fas.fa-volume-up
+            div
+                span#fullScreen
+                    i.fas.fa-expand     
+    div.video__data
+        p.video__title=video.title
+        small.video__owner Uploaded by 
             a(href=`/users/${video.owner._id}`)=video.owner.name
-    if String(video.owner._id) === String(loggedInUser._id)
-        a(href=`${video.id}/edit`) Edit Video &rarr;
-        br
-        a(href=`${video.id}/delete`) Delete Video &rarr;
+        small.video__createdAt=new Date(video.createdAt).toLocaleDateString("ko-kr", {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})                    
+        if String(video.owner._id) === String(loggedInUser._id)
+            a(href=`${video.id}/edit`) Edit Video &rarr;
+            br
+            a(href=`${video.id}/delete`) Delete Video &rarr;
+    if loggedIn
+        div.video__add-comments
+            form.video__comment-form#commentForm
+                textarea(cols="30", rows="10", placeholder="Write a nice commment...")
+                button Add Comment         
+    div.video__comments
+        ul
+            each comment in video.comments.reverse()
+                li.video__comment(data-id=comment.id)
+                    i.fas.fa-comment
+                    span #{comment.text} 
+                    if String(comment.owner._id) === String(loggedInUser._id)
+                        button.commentDel ❌                      
+
+block scripts
+    script(src="/static/js/videoPlayer.js") 
+    if loggedIn
+        script(src="/static/js/commentSection.js")                                               
+    //- div
+    //-     p=video.description
+    //-     small=video.createdAt
+    //- div
+    //-     small Uploaded by 
+    //-         a(href=`/users/${video.owner._id}`)=video.owner.name
+    //- if String(video.owner._id) === String(loggedInUser._id)
+    //-     a(href=`${video.id}/edit`) Edit Video &rarr;
+    //-     br
+    //-     a(href=`${video.id}/delete`) Delete Video &rarr;
+

@@ -1,2 +1,2 @@
+import "regenerator-runtime";
 import "../scss/styles.scss";
-alert("it works");

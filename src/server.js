@@ -1,10 +1,12 @@
 import express from "express";
 import morgan from "morgan";
 import session from "express-session";
+import flash from "express-flash";
 import MongoStore from "connect-mongo";
 import rootRouter from "./routers/rootRouter";
 import videoRouter from "./routers/videoRouter";
 import userRouter from "./routers/userRouter";
+import apiRouter from "./routers/apiRouter";
 import { localsMiddleware } from "./middlewares";
 
 const app = express();
@@ -12,8 +14,11 @@ const logger = morgan("dev");
 
 app.set("view engine", "pug");
 app.set("views", process.cwd() + "/src/views"); //views 폴더 설정
+// cwd는 package.json이 있는 폴더
 app.use(logger);
 app.use(express.urlencoded({ extended: true }));
+// 서버가 form으로부터 오는 data 이해하도록
+app.use(express.json());
 
 app.use(
   session({
@@ -29,6 +34,7 @@ app.use(
   })
 );
 
+app.use(flash());
 app.use(localsMiddleware);
 app.use("/uploads", express.static("uploads"));
 // static file : 폴더전체를 브라우저에게 노출시킴.
@@ -38,5 +44,6 @@ app.use("/static", express.static("assets"));
 app.use("/", rootRouter);
 app.use("/videos", videoRouter);
 app.use("/users", userRouter);
+app.use("/api", apiRouter);
 
 export default app;

@@ -1,11 +1,18 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 
+const BASE_JS = "./src/client/js/";
+
 module.exports = {
-  entry: "./src/client/js/main.js",
+  entry: {
+    main: BASE_JS + "main.js",
+    videoPlayer: BASE_JS + "videoPlayer.js",
+    recorder: BASE_JS + "recorder.js",
+    commentSection: BASE_JS + "commentSection.js",
+  },
   //사용할 파일 경로
-  mode: "development",
-  watch: true,
+
+  // watch: true,
   //파일이 바뀌면 저절로 assets 업데이트 해줌.
   plugins: [
     new MiniCssExtractPlugin({
@@ -13,7 +20,7 @@ module.exports = {
     }),
   ],
   output: {
-    filename: "js/main.js",
+    filename: "js/[name].js",
     path: path.resolve(__dirname, "assets"),
     //절대경로로 path 입력해줘야 함
     //resolve(현재파일경로,추가할 경로) -> 현재파일경로/추가할경로로 path 생성
