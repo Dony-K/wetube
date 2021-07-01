@@ -169,7 +169,8 @@ export const postEdit = async (req, res) => {
   } = req.session;
   const { id } = req.params;
   const { title, description, hashtags } = req.body;
-  const video = await Video.exists({ _id: id });
+  const video = await Video.findById({ _id: id });
+
   if (!video) {
     return res.status(404).render("404", { pageTitle: "Video not found." });
   }
@@ -196,12 +197,13 @@ export const postUpload = async (req, res) => {
   } = req.session;
   const { video, thumb } = req.files;
   const { title, description, hashtags } = req.body;
+  const isHeroku = process.env.NODE_ENV === "production";
   try {
     const newVideo = await Video.create({
       title,
       description,
-      fileUrl: video[0].path,
-      thumbUrl: thumb[0].path,
+      fileUrl: isHeroku ? video[0].location : "/" + video[0].path,
+      thumbUrl: isHeroku ? thumb[0].location : "/" + thumb[0].path,
       owner: _id,
       hashtags: Video.formatHashtags(hashtags),
     });
@@ -288,6 +290,7 @@ export const deleteComment = async (req, res) => {
     params: { id },
   } = req;
   const comment = await Comment.findById(id);
+  const video = await Video.findById(comment.video);
   if (!comment) {
     return res.status(404).render("404", { pageTitle: "Comment not found." });
   }
@@ -295,5 +298,7 @@ export const deleteComment = async (req, res) => {
     return res.status(403).redirect("/");
   }
   await Comment.findByIdAndDelete(id);
+  video.comments = video.comments.filter((elements) => elements != id);
+  video.save();
   return res.sendStatus(200);
 };

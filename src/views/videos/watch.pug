@@ -4,7 +4,7 @@ extends ../base
 block content
     div#videoContainer(data-id=video._id)
         //- 프론트엔드에 쓰기 위해 video id를 데이터에 저장
-        video(src="/" + video.fileUrl)
+        video(src=video.fileUrl)
         //- 비디오경로에서 비디오 가져오고 controls는 비디오 재생 조절버튼 생성
         div#videoControls.videoControls
             div.videoControls__play
